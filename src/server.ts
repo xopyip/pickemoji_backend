@@ -1,11 +1,27 @@
 import * as express from "express";
+import * as mongoose from "mongoose";
+import {typeDefs} from "./typeDefs";
+import {resolvers} from "./resolvers";
+import {ApolloServer} from "apollo-server-express";
 
-const app = express();
+import * as dotenv from "dotenv";
+dotenv.config();
 
-app.get("/", (req, res) => {
-    res.send("Hello World")
-})
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-     console.log(`Server is running in http://localhost:${PORT}`)
-})
+async function startServer(){
+
+  const app = express();
+
+  const server = new ApolloServer({ typeDefs, resolvers });
+
+  const PORT = process.env.PORT || 4000;
+
+  await mongoose.connect('mongodb://localhost:32768/pickemoji', {useNewUrlParser: true, useUnifiedTopology: true});
+
+  server.applyMiddleware({ app });
+
+  app.listen({ port: PORT }, () =>
+    console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+  )
+
+}
+startServer();
