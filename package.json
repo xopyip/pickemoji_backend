@@ -1,0 +1,39 @@
+{
+  "name": "pickemoji_api",
+  "version": "1.0.0",
+  "main": "src/server.ts",
+  "author": "XopyIP",
+  "license": "MIT",
+  "scripts": {
+    "start": "node --inspect=5858 -r ts-node/register ./src/server.ts",
+    "start:watch": "nodemon",
+    "build": "tsc"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      ".git",
+      "node_modules"
+    ],
+    "watch": [
+      "src"
+    ],
+    "exec": "yarn start",
+    "ext": "ts"
+  },
+  "dependencies": {
+    "apollo-server": "^2.16.0",
+    "express": "^4.17.1",
+    "graphql": "^15.3.0",
+    "mongoose": "^5.9.25"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.24",
+    "eslint": "^7.5.0",
+    "eslint-plugin-import": "^2.22.0",
+    "nodemon": "^2.0.4",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  }
+}
