@@ -12,6 +12,7 @@ export const typeDefs = gql`
     username: String!,
     about: String,
     role: Int
+    createdAt: Date
   }
 
   type LoggedUser {

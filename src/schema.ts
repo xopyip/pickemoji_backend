@@ -5,8 +5,11 @@ import {typeDefs as QuizzesTypeDefs, resolvers as QuizzesResolvers} from "./gql/
 import {gql} from "apollo-server";
 
 import {merge} from "lodash";
+import {GraphQLScalarType, Kind} from "graphql";
 
 const baseTypeDefs = gql`
+    scalar Date
+    
     type Query{
         _empty: String
     }
@@ -15,4 +18,22 @@ const baseTypeDefs = gql`
     }`;
 
 export const typeDefs = [baseTypeDefs, AuthTypeDefs, CategoriesTypeDefs, QuizzesTypeDefs];
-export const resolvers = merge(AuthResolvers, CategoriesResolvers, QuizzesResolvers);
+export const resolvers = merge({
+
+  Date: new GraphQLScalarType({
+    name: 'Date',
+    description: 'Date custom scalar type',
+    parseValue(value) {
+      return new Date(value); // value from the client
+    },
+    serialize(value) {
+      return value.getTime(); // value sent to the client
+    },
+    parseLiteral(ast) {
+      if (ast.kind === Kind.INT) {
+        return parseInt(ast.value, 10); // ast value is always in string format
+      }
+      return null;
+    },
+  }),
+}, AuthResolvers, CategoriesResolvers, QuizzesResolvers);

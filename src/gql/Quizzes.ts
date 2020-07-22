@@ -26,6 +26,7 @@ export const typeDefs = gql`
     category: Category!
     emojis: [QuizEmojiOut]
     accepted: Boolean
+    createdAt: Date
   }
 
   extend type Query {

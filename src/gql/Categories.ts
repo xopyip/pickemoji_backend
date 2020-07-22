@@ -9,6 +9,7 @@ export const typeDefs = gql`
     _id: ID!
     name: String!
     icon: String!
+    createdAt: Date
   }
 
   extend type Query {
