@@ -1,5 +1,5 @@
 import {ApolloError, AuthenticationError} from "apollo-server-express";
-import {Category} from "../models/QuizzCategory";
+import {Category} from "../models/QuizCategory";
 import {Roles} from "../Roles";
 
 const {gql} = require('apollo-server');
@@ -38,7 +38,6 @@ export const resolvers = {
       if(ctx.user.role < Roles.ADMIN){
         throw new AuthenticationError("You don't have permissions");
       }
-      console.log(name);
       if(await Category.findOne({name})){
         throw new ApolloError("Category already exists");
       }

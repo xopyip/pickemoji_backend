@@ -17,13 +17,13 @@ async function startServer(){
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req }) => {
+    context: async ({ req }) => {
       const token = req.headers.authorization || '';
       if(!token) return {};
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if(typeof decoded === "object"){
-          let user = User.findById(decoded['user'].id);
+          let user = await User.findById(decoded['user'].id);
           return { user };
         }
       } catch (e) {
