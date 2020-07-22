@@ -20,12 +20,13 @@ export const typeDefs = gql`
     token: String!
   }
 
-  type Query {
+  extend type Query {
     users: [User!]!
-    me: User
+    me: User,
+    user(username: String): User
   }
   
-  type Mutation {
+  extend type Mutation {
     register(username: String, password: String): LoggedUser
     login(username: String, password: String): LoggedUser
   }
@@ -39,6 +40,10 @@ export const resolvers = {
       }
       return User.find();
     },
+    user: (parent, {username}, ctx) => {
+      return User.findOne({username});
+    },
+
     me: (parent, args, ctx) => {
       if(!ctx.user){
         throw new AuthenticationError("Invalid token");

@@ -6,6 +6,7 @@ import {ApolloServer} from "apollo-server-express";
 import * as dotenv from "dotenv";
 
 import * as jwt from "jsonwebtoken";
+import {User} from "./models/User";
 
 dotenv.config();
 
@@ -22,7 +23,7 @@ async function startServer(){
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if(typeof decoded === "object"){
-          let user = decoded['user'];
+          let user = User.findById(decoded['user'].id);
           return { user };
         }
       } catch (e) {
