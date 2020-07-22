@@ -1,8 +1,35 @@
-import {User} from "./models/User";
+import {ApolloError, AuthenticationError} from "apollo-server-express";
+import {User} from "../models/User";
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
-import {ApolloError, AuthenticationError} from "apollo-server-express";
 
+const {gql} = require('apollo-server');
+
+export const typeDefs = gql`
+
+  type User {
+    _id: ID!
+    username: String!,
+    about: String,
+    role: Int
+  }
+
+  type LoggedUser {
+    _id: ID!
+    username: String!
+    token: String!
+  }
+
+  type Query {
+    users: [User!]!
+    me: User
+  }
+  
+  type Mutation {
+    register(username: String, password: String): LoggedUser
+    login(username: String, password: String): LoggedUser
+  }
+`;
 
 export const resolvers = {
   Query: {
@@ -12,6 +39,12 @@ export const resolvers = {
       }
       return User.find();
     },
+    me: (parent, args, ctx) => {
+      if(!ctx.user){
+        throw new AuthenticationError("Invalid token");
+      }
+      return User.findById(ctx.user.id);
+    }
   },
   Mutation: {
     async register(parent, {username, password}) {
@@ -39,8 +72,7 @@ export const resolvers = {
       };
 
       return {
-        id: user._id,
-        username: user.username,
+        ...(user.toObject()),
         token: jwt.sign(
           payload,
           process.env.JWT_SECRET, {
@@ -65,8 +97,7 @@ export const resolvers = {
       };
 
       return {
-        id: user._id,
-        username: user.username,
+        ...(user.toObject()),
         token: jwt.sign(
           payload,
           process.env.JWT_SECRET, {

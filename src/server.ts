@@ -1,7 +1,6 @@
 import * as express from "express";
 import * as mongoose from "mongoose";
-import {typeDefs} from "./typeDefs";
-import {resolvers} from "./resolvers";
+import {typeDefs, resolvers} from "./schema";
 import {ApolloServer} from "apollo-server-express";
 
 import * as dotenv from "dotenv";
@@ -18,12 +17,8 @@ async function startServer(){
     typeDefs,
     resolvers,
     context: ({ req }) => {
-      // Get the user token from the headers.
       const token = req.headers.authorization || '';
-
-      if(!token)
-        return {};
-
+      if(!token) return {};
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if(typeof decoded === "object"){
