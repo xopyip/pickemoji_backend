@@ -25,6 +25,7 @@ export const typeDefs = gql`
     author: User!
     category: Category!
     emojis: [QuizEmojiOut]
+    accepted: Boolean
   }
 
   extend type Query {
@@ -35,6 +36,7 @@ export const typeDefs = gql`
   
   extend type Mutation {
     createQuiz(name: String, desc: String, categoryName: String, emojis: [QuizEmoji]): Quiz
+    acceptQuiz(id: String): Quiz
   }
 `;
 
@@ -84,5 +86,20 @@ export const resolvers = {
       await quiz.save();
       return quiz;
     },
+    async acceptQuiz(parent, {id}, ctx){
+      if(!ctx.user){
+        throw new AuthenticationError("Invalid token");
+      }
+      if(ctx.user.role < Roles.MODERATOR){
+        throw new AuthenticationError("You don't have permissions");
+      }
+      let quiz = await Quiz.findById(id);
+      if(!quiz){
+        throw new ApolloError("Quiz not found");
+      }
+      quiz.accepted = true;
+      await quiz.save();
+      return quiz;
+    }
   }
 };
