@@ -6,7 +6,12 @@ import {ApolloError, AuthenticationError} from "apollo-server-express";
 
 export const resolvers = {
   Query: {
-    users: () => User.find(),
+    users: (parent, args, ctx) => {
+      if(!ctx.user){
+        throw new AuthenticationError("Invalid token");
+      }
+      return User.find();
+    },
   },
   Mutation: {
     async register(parent, {username, password}) {

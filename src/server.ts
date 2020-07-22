@@ -5,13 +5,37 @@ import {resolvers} from "./resolvers";
 import {ApolloServer} from "apollo-server-express";
 
 import * as dotenv from "dotenv";
+
+import * as jwt from "jsonwebtoken";
+
 dotenv.config();
 
 async function startServer(){
 
   const app = express();
 
-  const server = new ApolloServer({ typeDefs, resolvers });
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: ({ req }) => {
+      // Get the user token from the headers.
+      const token = req.headers.authorization || '';
+
+      if(!token)
+        return {};
+
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if(typeof decoded === "object"){
+          let user = decoded['user'];
+          return { user };
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      return {};
+    },
+  });
 
   const PORT = process.env.PORT || 4000;
 
