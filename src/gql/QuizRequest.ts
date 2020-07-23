@@ -2,6 +2,7 @@ import {ApolloError, AuthenticationError} from "apollo-server-express";
 import {User} from "../models/User";
 import {Quiz} from "../models/Quiz";
 import {QuizRequest} from "../models/QuizRequest";
+import {QuizDone} from "../models/QuizDone";
 
 const {gql} = require('apollo-server');
 
@@ -16,6 +17,8 @@ export const typeDefs = gql`
 
   extend type Query {
     quizRequest(id: String): QuizRequest
+    requestResults(id: String): [QuizDone!]!
+    myRequests: [QuizRequest!]!
   }
   
   extend type Mutation {
@@ -35,7 +38,16 @@ export const resolvers = {
   Query: {
     quizRequest: async (parent, {id}, ctx) => {
       return QuizRequest.findById(id);
-    }
+    },
+    myRequests: async (parent, args, ctx) => {
+      if(!ctx.user){
+        throw new AuthenticationError("Invalid token");
+      }
+      return QuizRequest.find({user: ctx.user._id});
+    },
+    requestResults: async (parent, {id}, ctx) => {
+      return QuizDone.find({quizRequest: id});
+    },
   },
   Mutation: {
     requestQuiz: async (parent, {quizID}, ctx) => {
