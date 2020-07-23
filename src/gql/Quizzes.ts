@@ -33,7 +33,9 @@ export const typeDefs = gql`
     quizzes: [Quiz!]!
     notAcceptedQuizzes: [Quiz!]!
     myQuizzes: [Quiz!]!
-    quiz(name: String): Quiz
+    userQuizzes(username: String): [Quiz!]!
+    categoryQuizzes(name: String): [Quiz!]!
+    quiz(id: String): Quiz
   }
   
   extend type Mutation {
@@ -61,6 +63,20 @@ export const resolvers = {
       }
       return Quiz.find({author: ctx.user._id});
     },
+    userQuizzes: async (parent, args, ctx) => {
+      let user = await User.findOne({username: args.username})
+      if(!user){
+        throw new AuthenticationError("User not found");
+      }
+      return Quiz.find({author: user._id});
+    },
+    categoryQuizzes: async (parent, args, ctx) => {
+      let category = await Category.findOne({name: args.name})
+      if(!category){
+        throw new AuthenticationError("User not found");
+      }
+      return Quiz.find({category: category._id});
+    },
     notAcceptedQuizzes: (parent, args, ctx) => {
       if(!ctx.user){
         throw new AuthenticationError("Invalid token");
@@ -70,8 +86,8 @@ export const resolvers = {
       }
       return Quiz.find({accepted: false});
     },
-    quiz: (parent, {name}, ctx) => {
-      return Quiz.findOne({name});
+    quiz: (parent, {id}, ctx) => {
+      return Quiz.findById(id);
     },
   },
   Mutation: {
