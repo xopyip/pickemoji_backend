@@ -78,6 +78,9 @@ export const resolvers = {
       if(emojis.length < 3){
         throw new ApolloError("Minimum amount of emojis is 3");
       }
+      if((new Set(emojis.map(el => el.emoji))).size !== emojis.length){
+        throw new ApolloError("There is emoji duplicate");
+      }
       let category = await QuizCategory.findOne({name: categoryName});
 
       if(!category) {
