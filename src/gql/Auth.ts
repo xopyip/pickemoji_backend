@@ -2,43 +2,53 @@ import {ApolloError, AuthenticationError} from "apollo-server-express";
 import {User} from "../models/User";
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
+import {Quiz} from "../models/Quiz";
 
 const {gql} = require('apollo-server');
 
 export const typeDefs = gql`
 
-  type User {
-    _id: ID!
-    username: String!,
-    about: String,
-    role: Int
-    createdAt: Date
-  }
+    type User {
+        _id: ID!
+        username: String!,
+        about: String,
+        role: Int
+        createdAt: Date
+        quizzes: [Quiz!]!
+    }
 
-  type LoggedUser {
-    _id: ID!
-    username: String!
-    token: String!
-  }
+    type LoggedUser {
+        _id: ID!
+        username: String!
+        token: String!
+    }
 
-  extend type Query {
-    users: [User!]!
-    me: User,
-    user(username: String): User
-  }
-  
-  extend type Mutation {
-    register(username: String, password: String): LoggedUser
-    login(username: String, password: String): LoggedUser
-  }
+    extend type Query {
+        users: [User!]!
+        me: User,
+        user(username: String): User
+    }
+
+    extend type Mutation {
+        register(username: String, password: String): LoggedUser
+        login(username: String, password: String): LoggedUser
+    }
 `;
 
-let EXPIRE_TIME = process.env.JWT_EXPIRE || 12*60*60;
+let EXPIRE_TIME = process.env.JWT_EXPIRE || 12 * 60 * 60;
 
 export const resolvers = {
+  User: {
+    quizzes: (parent, args, ctx) => {
+      if(ctx.user && ctx.user._id.toString() === parent._id.toString()){
+        return Quiz.find({author: parent._id});
+      }
+      return Quiz.find({author: parent._id, accepted: true});
+    }
+  },
   Query: {
     users: (parent, args, ctx) => {
-      if(!ctx.user){
+      if (!ctx.user) {
         throw new AuthenticationError("Invalid token");
       }
       return User.find();
@@ -48,7 +58,7 @@ export const resolvers = {
     },
 
     me: (parent, args, ctx) => {
-      if(!ctx.user){
+      if (!ctx.user) {
         throw new AuthenticationError("Invalid token");
       }
       return User.findById(ctx.user.id);
@@ -89,7 +99,7 @@ export const resolvers = {
         )
       };
     },
-    async login(parent, {username, password}){
+    async login(parent, {username, password}) {
       let user = await User.findOne({username});
       if (!user)
         throw new AuthenticationError("Credentials doesn't match");

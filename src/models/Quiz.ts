@@ -32,7 +32,7 @@ const QuizSchema = mongoose.Schema({
   emojis: [{emoji: String, desc: String}],
   createdAt: {
     type: Date,
-    default: Date.now()
+    default: () => Date.now()
   }
 });
 

@@ -1,6 +1,7 @@
 import {ApolloError, AuthenticationError} from "apollo-server-express";
 import {Category} from "../models/QuizCategory";
 import {Roles} from "../Roles";
+import {Quiz} from "../models/Quiz";
 
 const {gql} = require('apollo-server');
 
@@ -10,6 +11,7 @@ export const typeDefs = gql`
     name: String!
     icon: String!
     createdAt: Date
+    quizzes: [Quiz!]!
   }
 
   extend type Query {
@@ -23,6 +25,11 @@ export const typeDefs = gql`
 `;
 
 export const resolvers = {
+  Category:{
+    quizzes: async (parent, args, ctx) => {
+      return Quiz.find({accepted: true, category: parent._id});
+    },
+  },
   Query: {
     categories: (parent, args, ctx) => {
       return Category.find();
