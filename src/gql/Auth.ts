@@ -33,6 +33,8 @@ export const typeDefs = gql`
   }
 `;
 
+let EXPIRE_TIME = process.env.JWT_EXPIRE || 12*60*60;
+
 export const resolvers = {
   Query: {
     users: (parent, args, ctx) => {
@@ -82,7 +84,7 @@ export const resolvers = {
         token: jwt.sign(
           payload,
           process.env.JWT_SECRET, {
-            expiresIn: 10000
+            expiresIn: EXPIRE_TIME
           }
         )
       };
@@ -107,7 +109,7 @@ export const resolvers = {
         token: jwt.sign(
           payload,
           process.env.JWT_SECRET, {
-            expiresIn: 3600
+            expiresIn: EXPIRE_TIME
           }
         )
       };

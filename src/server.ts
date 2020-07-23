@@ -26,9 +26,7 @@ async function startServer(){
           let user = await User.findById(decoded['user'].id);
           return { user };
         }
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) {}
       return {};
     },
   });
