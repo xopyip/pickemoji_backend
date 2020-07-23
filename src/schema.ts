@@ -2,6 +2,7 @@ import {typeDefs as AuthTypeDefs, resolvers as AuthResolvers} from "./gql/Auth";
 import {typeDefs as CategoriesTypeDefs, resolvers as CategoriesResolvers} from "./gql/Categories";
 import {typeDefs as QuizzesTypeDefs, resolvers as QuizzesResolvers} from "./gql/Quizzes";
 import {typeDefs as QuizRequestTypeDefs, resolvers as QuizRequestResolvers} from "./gql/QuizRequest";
+import {typeDefs as QuizDoneTypeDefs, resolvers as QuizDoneResolvers} from "./gql/QuizDone";
 
 import {gql} from "apollo-server";
 
@@ -18,7 +19,7 @@ const baseTypeDefs = gql`
         _empty: String
     }`;
 
-export const typeDefs = [baseTypeDefs, AuthTypeDefs, CategoriesTypeDefs, QuizzesTypeDefs, QuizRequestTypeDefs];
+export const typeDefs = [baseTypeDefs, AuthTypeDefs, CategoriesTypeDefs, QuizzesTypeDefs, QuizRequestTypeDefs, QuizDoneTypeDefs];
 export const resolvers = merge({
 
   Date: new GraphQLScalarType({
@@ -37,4 +38,4 @@ export const resolvers = merge({
       return null;
     },
   }),
-}, AuthResolvers, CategoriesResolvers, QuizzesResolvers, QuizRequestResolvers);
+}, AuthResolvers, CategoriesResolvers, QuizzesResolvers, QuizRequestResolvers, QuizDoneResolvers);

@@ -34,9 +34,6 @@ export const resolvers = {
   },
   Query: {
     quizRequest: async (parent, {id}, ctx) => {
-      if(!ctx.user){
-        throw new AuthenticationError("Invalid token");
-      }
       return QuizRequest.findById(id);
     }
   },
