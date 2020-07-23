@@ -1,4 +1,5 @@
 import * as express from "express";
+import * as cors from "cors";
 import * as mongoose from "mongoose";
 import {typeDefs, resolvers} from "./schema";
 import {ApolloServer} from "apollo-server-express";
@@ -13,6 +14,8 @@ dotenv.config();
 async function startServer(){
 
   const app = express();
+
+  app.use(cors());
 
   const server = new ApolloServer({
     typeDefs,
