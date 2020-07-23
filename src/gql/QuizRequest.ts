@@ -53,6 +53,10 @@ export const resolvers = {
       if(!quiz.accepted){
         throw new ApolloError("Quiz is not accepted yet");
       }
+      let prevReq = await QuizRequest.findOne({user, quiz});
+      if(prevReq){
+        return prevReq;
+      }
       let request = new QuizRequest({user, quiz});
       await request.save();
       return request;
