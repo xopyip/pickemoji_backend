@@ -32,6 +32,7 @@ export const typeDefs = gql`
   extend type Query {
     quizzes: [Quiz!]!
     notAcceptedQuizzes: [Quiz!]!
+    myQuizzes: [Quiz!]!
     quiz(name: String): Quiz
   }
   
@@ -53,6 +54,12 @@ export const resolvers = {
   Query: {
     quizzes: (parent, args, ctx) => {
       return Quiz.find({accepted: true});
+    },
+    myQuizzes: (parent, args, ctx) => {
+      if(!ctx.user){
+        throw new AuthenticationError("Invalid token");
+      }
+      return Quiz.find({author: ctx.user._id});
     },
     notAcceptedQuizzes: (parent, args, ctx) => {
       if(!ctx.user){
